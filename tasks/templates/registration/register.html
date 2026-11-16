@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Register – Tracker{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+    <h2>Create an Account</h2>
+    <p class="auth-subtitle">Get started by creating your Tracker account.</p>
+
+    {% if form.non_field_errors %}
+        <div class="non-field-errors">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'tasks:register' %}" novalidate>
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+            {{ form.username }}
+            {% if form.username.help_text %}
+                <small class="help-text">{{ form.username.help_text }}</small>
+            {% endif %}
+            {% if form.username.errors %}
+                <ul class="error-list">
+                    {% for error in form.username.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+            {{ form.email }}
+            {% if form.email.help_text %}
+                <small class="help-text">{{ form.email.help_text }}</small>
+            {% endif %}
+            {% if form.email.errors %}
+                <ul class="error-list">
+                    {% for error in form.email.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.password1.id_for_label }}">{{ form.password1.label }}</label>
+            {{ form.password1 }}
+            {% if form.password1.help_text %}
+                <small class="help-text">{{ form.password1.help_text|safe }}</small>
+            {% endif %}
+            {% if form.password1.errors %}
+                <ul class="error-list">
+                    {% for error in form.password1.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.password2.id_for_label }}">{{ form.password2.label }}</label>
+            {{ form.password2 }}
+            {% if form.password2.help_text %}
+                <small class="help-text">{{ form.password2.help_text }}</small>
+            {% endif %}
+            {% if form.password2.errors %}
+                <ul class="error-list">
+                    {% for error in form.password2.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn-primary">Register</button>
+    </form>
+
+    <div class="auth-footer">
+        <p>Already have an account? <a href="{% url 'tasks:login' %}">Log in here</a></p>
+    </div>
+</div>
+{% endblock %}
+

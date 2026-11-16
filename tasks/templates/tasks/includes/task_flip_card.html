@@ -1,0 +1,73 @@
+<div class="flip-card {% if task.is_completed %}task-completed{% endif %}" id="card-{{ task.pk }}" tabindex="0" aria-label="Task: {{ task.title }}">
+    <div class="flip-card-inner">
+        <!-- Front Face -->
+        <div class="flip-card-front">
+            <div class="flip-header">
+                <span class="flip-date">📅 {{ task.date }}</span>
+                {% if task.is_completed %}
+                    <span class="badge badge-completed">Completed</span>
+                {% else %}
+                    <span class="badge badge-pending">Pending</span>
+                {% endif %}
+            </div>
+
+            <div class="flip-body">
+                <h3 class="flip-title">
+                    <a href="{% url 'tasks:task_detail' task.pk %}" class="task-title-link" onclick="event.stopPropagation();">
+                        {{ task.title }}
+                    </a>
+                </h3>
+                {% if task.description %}
+                    <p class="flip-preview">{{ task.description|truncatewords:12 }}</p>
+                {% else %}
+                    <p class="flip-preview text-muted"><em>No description provided.</em></p>
+                {% endif %}
+            </div>
+
+            <div class="flip-footer">
+                <button type="button" class="btn-flip-trigger" onclick="toggleCardFlip(this)" aria-label="Flip card for details and actions">
+                    <span class="flip-icon">&#x21bb;</span> Details &amp; Actions
+                </button>
+            </div>
+        </div>
+
+        <!-- Back Face -->
+        <div class="flip-card-back">
+            <div class="flip-header">
+                <span class="flip-title-back" title="{{ task.title }}">{{ task.title|truncatechars:28 }}</span>
+                <button type="button" class="btn-flip-close" onclick="toggleCardFlip(this)" aria-label="Flip back to front">
+                    &#x2715;
+                </button>
+            </div>
+
+            <div class="flip-body">
+                <div class="flip-back-section">
+                    <span class="flip-back-label">Description:</span>
+                    <p class="flip-back-desc">
+                        {% if task.description %}
+                            {{ task.description }}
+                        {% else %}
+                            <em>No description provided.</em>
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="flip-back-meta">
+                    <small>Created: {{ task.created_at|date:"M d, Y" }}</small>
+                </div>
+            </div>
+
+            <div class="flip-footer flip-actions">
+                <form method="post" action="{% url 'tasks:task_toggle' task.pk %}" style="display:inline;" onclick="event.stopPropagation();">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <button type="submit" class="btn-sm {% if task.is_completed %}btn-secondary{% else %}btn-primary{% endif %}">
+                        {% if task.is_completed %}Mark Pending{% else %}Mark Complete{% endif %}
+                    </button>
+                </form>
+                <a href="{% url 'tasks:task_update' task.pk %}" class="btn-secondary btn-sm" onclick="event.stopPropagation();">Edit</a>
+                <a href="{% url 'tasks:task_delete' task.pk %}" class="btn-danger btn-sm" onclick="event.stopPropagation();">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+

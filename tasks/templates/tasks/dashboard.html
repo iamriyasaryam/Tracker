@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard – Tracker{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <!-- Header -->
+    <div class="page-header">
+        <div>
+            <h1>Dashboard</h1>
+            <p>Welcome, {{ user.username }}! Today is <strong>{{ today|date:"l, F j, Y" }}</strong>.</p>
+        </div>
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <a href="{% url 'tasks:task_history' %}" class="btn-secondary">View History</a>
+            <a href="{% url 'tasks:task_list' %}" class="btn-secondary">All Tasks</a>
+            <a href="{% url 'tasks:task_create' %}" class="btn-primary">+ Add New Task</a>
+        </div>
+    </div>
+
+    <!-- Step 2: Overview Statistics -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">Total Tasks</div>
+            <div class="stat-value" id="stat-total">{{ total_count }}</div>
+            <span class="stat-subtext">Overall tasks created</span>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Completed</div>
+            <div class="stat-value" id="stat-completed" style="color: var(--success-color);">{{ completed_count }}</div>
+            <span class="stat-subtext">Finished tasks</span>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Pending</div>
+            <div class="stat-value" id="stat-pending" style="color: var(--warning-color);">{{ pending_count }}</div>
+            <span class="stat-subtext">Awaiting completion</span>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Completion Rate</div>
+            <div class="stat-value" id="stat-rate" style="color: var(--primary-color);">{{ completion_rate }}%</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" style="width: {{ completion_rate }}%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 3: Today's Tasks (Featured Flip Cards) -->
+    <div class="dashboard-section">
+        <div class="section-header">
+            <div>
+                <h2>Today's Tasks</h2>
+                <p class="section-subtitle">Tasks scheduled for today ({{ today|date:"M d, Y" }})</p>
+            </div>
+            {% if today_tasks %}
+                <span class="badge badge-info">{{ today_tasks.count }} task{{ today_tasks.count|pluralize }} today</span>
+            {% endif %}
+        </div>
+
+        {% if today_tasks %}
+            <div class="task-grid">
+                {% for task in today_tasks %}
+                    {% include 'tasks/includes/task_flip_card.html' with task=task %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <h3>No tasks scheduled for today</h3>
+                <p>You have nothing on your schedule for today. Plan ahead and stay productive!</p>
+                <a href="{% url 'tasks:task_create' %}" class="btn-primary">Add Task for Today</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Step 4: Task History (Grouped by Date) -->
+    <div class="dashboard-section" style="margin-top: 2.5rem;">
+        <div class="section-header">
+            <div>
+                <h2>Task History</h2>
+                <p class="section-subtitle">Previous tasks grouped by date</p>
+            </div>
+            {% if history_tasks %}
+                <a href="{% url 'tasks:task_history' %}" class="btn-link">View Full History &rarr;</a>
+            {% endif %}
+        </div>
+
+        {% if history_tasks %}
+            {% regroup history_tasks by date as history_by_date %}
+            {% for date_group in history_by_date %}
+                <div class="history-group">
+                    <div class="history-group-header">
+                        <h3>📅 {{ date_group.grouper|date:"F j, Y" }}</h3>
+                        <span class="history-group-count">{{ date_group.list|length }} task{{ date_group.list|pluralize }}</span>
+                    </div>
+                    <div class="task-grid">
+                        {% for task in date_group.list %}
+                            {% include 'tasks/includes/task_flip_card.html' with task=task %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <h3>No previous task history</h3>
+                <p>Previous tasks from past dates will be archived and grouped here.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

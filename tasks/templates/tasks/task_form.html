@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if action == 'Edit' %}Edit Task{% else %}New Task{% endif %} – Tracker{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>{% if action == 'Edit' %}Edit Task{% else %}Create New Task{% endif %}</h2>
+    <p class="auth-subtitle">
+        {% if action == 'Edit' %}
+            Update the details of your task below.
+        {% else %}
+            Fill in the information below to add a new task.
+        {% endif %}
+    </p>
+
+    {% if form.non_field_errors %}
+        <div class="non-field-errors">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+            {{ form.title }}
+            {% if form.title.errors %}
+                <ul class="error-list">
+                    {% for error in form.title.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+            {{ form.description }}
+            {% if form.description.help_text %}
+                <small class="help-text">{{ form.description.help_text }}</small>
+            {% endif %}
+            {% if form.description.errors %}
+                <ul class="error-list">
+                    {% for error in form.description.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.date.id_for_label }}">{{ form.date.label }}</label>
+            {{ form.date }}
+            {% if form.date.help_text %}
+                <small class="help-text">{{ form.date.help_text }}</small>
+            {% endif %}
+            {% if form.date.errors %}
+                <ul class="error-list">
+                    {% for error in form.date.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">
+                {% if action == 'Edit' %}Save Changes{% else %}Create Task{% endif %}
+            </button>
+            <a href="{% url 'tasks:task_list' %}" class="btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

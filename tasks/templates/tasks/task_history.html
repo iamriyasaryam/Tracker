@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Task History – Tracker{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1>Task History</h1>
+            <p>Review past tasks grouped by date.</p>
+        </div>
+        <div style="display: flex; gap: 0.75rem;">
+            <a href="{% url 'tasks:dashboard' %}" class="btn-secondary">&larr; Back to Dashboard</a>
+            <a href="{% url 'tasks:task_create' %}" class="btn-primary">+ Add New Task</a>
+        </div>
+    </div>
+
+    {% if history_tasks %}
+        {% regroup history_tasks by date as history_by_date %}
+        {% for date_group in history_by_date %}
+            <div class="history-group">
+                <div class="history-group-header">
+                    <h3>📅 {{ date_group.grouper|date:"F j, Y" }}</h3>
+                    <span class="history-group-count">{{ date_group.list|length }} task{{ date_group.list|pluralize }}</span>
+                </div>
+                <div class="task-grid">
+                    {% for task in date_group.list %}
+                        {% include 'tasks/includes/task_flip_card.html' with task=task %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <h3>No Task History Found</h3>
+            <p>You do not have any previous tasks recorded yet.</p>
+            <a href="{% url 'tasks:task_create' %}" class="btn-primary">Create a Task</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+

@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Tracker{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'tasks/css/style.css' %}">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <a href="{% url 'tasks:dashboard' %}" class="navbar-brand">
+                <span>📋</span> Tracker
+            </a>
+            <ul class="navbar-nav">
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'tasks:dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'tasks:task_list' %}">Tasks</a></li>
+                    <li><a href="{% url 'tasks:task_history' %}">History</a></li>
+                    <li><a href="{% url 'tasks:task_create' %}" class="btn-primary btn-sm">+ New Task</a></li>
+                    <li class="user-greeting">Hi, <strong>{{ user.username }}</strong></li>
+                    <li>
+                        <form method="post" action="{% url 'tasks:logout' %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-link">Logout</button>
+                        </form>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'tasks:login' %}">Login</a></li>
+                    <li><a href="{% url 'tasks:register' %}">Register</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        {% if messages %}
+            <div class="messages-container">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags|default:'info' }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>Tracker &copy; 2026. All rights reserved.</p>
+    </footer>
+
+    <!-- Interactive Card Flip Handler (Vanilla JS) -->
+    <script>
+        function toggleCardFlip(element) {
+            const card = element.closest('.flip-card');
+            if (card) {
+                card.classList.toggle('is-flipped');
+            }
+        }
+    </script>
+</body>
+</html>

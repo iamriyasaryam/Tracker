@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ task.title }} – Tracker{% endblock %}
+
+{% block content %}
+<div class="detail-card">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; gap: 1rem; flex-wrap: wrap;">
+        <div>
+            <h2>{{ task.title }}</h2>
+            <div style="margin-top: 0.5rem;">
+                {% if task.is_completed %}
+                    <span class="badge badge-completed">Completed</span>
+                {% else %}
+                    <span class="badge badge-pending">Pending</span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="task-actions">
+            <form method="post" action="{% url 'tasks:task_toggle' task.pk %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn-secondary btn-sm">
+                    {% if task.is_completed %}Mark Pending{% else %}Mark Complete{% endif %}
+                </button>
+            </form>
+            <a href="{% url 'tasks:task_update' task.pk %}" class="btn-secondary btn-sm">Edit</a>
+            <a href="{% url 'tasks:task_delete' task.pk %}" class="btn-danger btn-sm">Delete</a>
+        </div>
+    </div>
+
+    <div class="detail-row">
+        <div class="detail-label">Description</div>
+        <div class="detail-value">
+            {% if task.description %}
+                <p style="white-space: pre-wrap;">{{ task.description }}</p>
+            {% else %}
+                <p style="color: var(--text-muted); font-style: italic;">No description provided.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="detail-row">
+        <div class="detail-label">Due Date</div>
+        <div class="detail-value">{{ task.date }}</div>
+    </div>
+
+    <div class="detail-row">
+        <div class="detail-label">Created At</div>
+        <div class="detail-value" style="font-size: 0.9rem; color: var(--text-muted);">{{ task.created_at }}</div>
+    </div>
+
+    <div style="margin-top: 2rem; border-top: 1px solid var(--border-color); padding-top: 1.25rem;">
+        <a href="{% url 'tasks:task_list' %}" class="btn-secondary">&larr; Back to Task List</a>
+    </div>
+</div>
+{% endblock %}
+

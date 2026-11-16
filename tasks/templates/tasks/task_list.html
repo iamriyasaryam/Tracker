@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}My Tasks – Tracker{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1>My Tasks</h1>
+            <p>Manage and track your tasks.</p>
+        </div>
+        <a href="{% url 'tasks:task_create' %}" class="btn-primary">+ Add New Task</a>
+    </div>
+
+    {% if tasks %}
+        <div class="task-table-wrapper">
+            <table class="task-table">
+                <thead>
+                    <tr>
+                        <th style="width: 35%;">Task</th>
+                        <th style="width: 20%;">Date</th>
+                        <th style="width: 15%;">Status</th>
+                        <th style="width: 30%; text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in tasks %}
+                        <tr class="{% if task.is_completed %}task-completed{% endif %}">
+                            <td>
+                                <a href="{% url 'tasks:task_detail' task.pk %}" class="task-title-link">
+                                    {{ task.title }}
+                                </a>
+                                {% if task.description %}
+                                    <p class="help-text">{{ task.description|truncatewords:15 }}</p>
+                                {% endif %}
+                            </td>
+                            <td>{{ task.date }}</td>
+                            <td>
+                                {% if task.is_completed %}
+                                    <span class="badge badge-completed">Completed</span>
+                                {% else %}
+                                    <span class="badge badge-pending">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="task-actions" style="justify-content: flex-end;">
+                                    <form method="post" action="{% url 'tasks:task_toggle' task.pk %}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn-secondary btn-sm">
+                                            {% if task.is_completed %}Mark Pending{% else %}Mark Complete{% endif %}
+                                        </button>
+                                    </form>
+                                    <a href="{% url 'tasks:task_update' task.pk %}" class="btn-secondary btn-sm">Edit</a>
+                                    <a href="{% url 'tasks:task_delete' task.pk %}" class="btn-danger btn-sm">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h3>No tasks yet</h3>
+            <p>You haven't added any tasks yet. Create your first task to get organized!</p>
+            <a href="{% url 'tasks:task_create' %}" class="btn-primary">Create Your First Task</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
